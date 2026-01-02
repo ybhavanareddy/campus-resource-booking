@@ -10,22 +10,41 @@ const generateToken = (user) => {
   );
 };
 
+// ================= REGISTER =================
 exports.signup = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
+
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email and password are required' });
+      return res.status(400).json({
+        message: 'Name, email and password are required',
+      });
     }
 
     const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ message: 'Email already in use' });
+    if (existing) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
 
-    const user = new User({ name, email, password, role });
+    // ✅ SAFE role handling
+    const user = new User({
+      name,
+      email,
+      password,
+      role: role === 'admin' ? 'admin' : 'user', // fallback safety
+    });
+
     await user.save();
 
     const token = generateToken(user);
+
     res.status(201).json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       token,
     });
   } catch (err) {
@@ -33,19 +52,34 @@ exports.signup = async (req, res, next) => {
   }
 };
 
+// ================= LOGIN =================
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: 'Email and password required',
+      });
+    }
 
     const user = await User.findOne({ email });
+
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({
+        message: 'Invalid email or password',
+      });
     }
 
     const token = generateToken(user);
+
     res.json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       token,
     });
   } catch (err) {

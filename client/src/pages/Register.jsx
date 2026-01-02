@@ -7,7 +7,9 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('user');
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -20,7 +22,9 @@ const Register = () => {
         name,
         email,
         password,
+        role, // ✅ role sent to backend
       });
+
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {
@@ -29,7 +33,7 @@ const Register = () => {
   };
 
   return (
-    <div>
+    <div className="page">
       <h2>Register</h2>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -40,7 +44,7 @@ const Register = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-        /><br />
+        />
 
         <input
           type="email"
@@ -48,7 +52,7 @@ const Register = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-        /><br />
+        />
 
         <input
           type="password"
@@ -56,14 +60,21 @@ const Register = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-        /><br />
+        />
+
+        {/* ✅ ROLE SELECTION */}
+        <label>Select Role</label>
+        <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
 
         <button type="submit">Register</button>
       </form>
-      <p>
-  Already have an account? <a href="/login">Login</a>
-</p>
 
+      <p style={{ marginTop: 10 }}>
+        Already have an account? <a href="/login">Login</a>
+      </p>
     </div>
   );
 };
