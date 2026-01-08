@@ -1,40 +1,138 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 24px;
+/* ===============================
+   Top Navbar
+   =============================== */
+
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
   background-color: #1e3a8a;
   color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 300;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ===============================
+   Left Section
+   =============================== */
+
+.nav-left {
+  display: flex;
+  align-items: center;
 }
 
 .nav-logo {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-.nav-links {
-  display: flex;
-  gap: 18px;
-}
-
-.nav-link {
+/* Sidebar toggle button */
+.sidebar-toggle {
+  background: none;
+  border: none;
   color: white;
-  text-decoration: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: background 0.2s ease;
-}
-
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.nav-auth {
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
-.nav-user {
+.sidebar-toggle:hover {
+  color: #bfdbfe;
+}
+
+/* ===============================
+   Center Section
+   =============================== */
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-title {
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* ===============================
+   Right Section (Profile)
+   =============================== */
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Wrapper for avatar + dropdown */
+.profile-wrapper {
+  position: relative;
+}
+
+/* Avatar */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.avatar:hover {
+  background-color: #1d4ed8;
+}
+
+/* ===============================
+   Profile Dropdown
+   =============================== */
+
+.profile-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: white;
+  color: #111827;
+  border-radius: 10px;
+  padding: 12px;
+  width: 160px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  z-index: 400;
+}
+
+/* User name */
+.profile-name {
   font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+/* Logout button */
+.profile-menu button {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.profile-menu button:hover {
+  background-color: #dc2626;
 }

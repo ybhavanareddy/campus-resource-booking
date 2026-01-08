@@ -1,23 +1,24 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Resources from './pages/Resources';
 import MyBookings from './pages/MyBookings';
-import Navbar from './components/Navbar';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminRoute from './components/AdminRoute';
 import ManageResources from './pages/ManageResources';
+import Layout from './layout/Layout';
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <Routes>
+      {/* Auth pages */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
+      {/* App layout */}
+      <Route element={<Layout />}>
         <Route
           path="/"
           element={
@@ -26,6 +27,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/resources"
           element={
@@ -34,22 +36,25 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
-        path="/my-bookings"
-        element={
-          <ProtectedRoute>
-            <MyBookings />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/analytics"
-        element={
-          <AdminRoute>
-            <AdminAnalytics />
-          </AdminRoute>
-        }
-      />
+          path="/my-bookings"
+          element={
+            <ProtectedRoute>
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/analytics"
+          element={
+            <AdminRoute>
+              <AdminAnalytics />
+            </AdminRoute>
+          }
+        />
+
         <Route
           path="/admin/resources"
           element={
@@ -58,11 +63,8 @@ function App() {
             </AdminRoute>
           }
         />
-
-      </Routes>
-            
-
-    </Router>
+      </Route>
+    </Routes>
   );
 }
 

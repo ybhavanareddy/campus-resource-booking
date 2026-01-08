@@ -1,41 +1,148 @@
+/* ===============================
+   Global Reset & Base Styles
+   =============================== */
+
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+/* ===============================
+   Body & Typography
+   =============================== */
+
 body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f4f6f8;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background-color: #f8fafc; /* cleaner dashboard background */
   color: #1f2937;
+  line-height: 1.5;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: #111827;
 }
 
 h2 {
+  font-size: 22px;
   margin-bottom: 16px;
 }
 
+h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+/* Paragraphs */
+p {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* ===============================
+   Buttons (Unified Style)
+   =============================== */
+
 button {
-  padding: 8px 14px;
+  padding: 8px 16px;
   background-color: #2563eb;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.2s ease;
 }
 
 button:hover {
   background-color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 button:disabled {
   background-color: #9ca3af;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
-input, select {
+/* Secondary button */
+button.secondary {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+button.secondary:hover {
+  background-color: #d1d5db;
+}
+
+/* Danger button */
+button.danger {
+  background-color: #ef4444;
+}
+
+button.danger:hover {
+  background-color: #dc2626;
+}
+
+/* ===============================
+   Inputs & Selects
+   =============================== */
+
+input,
+select,
+textarea {
   width: 100%;
-  padding: 8px;
+  padding: 8px 10px;
   margin-top: 6px;
   margin-bottom: 12px;
-  border-radius: 5px;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
+  font-size: 14px;
+  color: #111827;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ===============================
+   Common Layout Helpers
+   =============================== */
+
+.page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Card utility (can be reused anywhere) */
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+/* ===============================
+   Smooth Transitions (UX polish)
+   =============================== */
+
+* {
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              box-shadow 0.2s ease;
 }

@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import ResourceCard from '../components/ResourceCard';
+import '../styles/manage-resources.css';
 
 const ManageResources = () => {
   const [resources, setResources] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+
+  const [query, setQuery] = useState('');
+  const [type, setType] = useState('');
+  const [status, setStatus] = useState('');
+
+  const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
+
   const [form, setForm] = useState({
     name: '',
     type: '',
@@ -11,37 +21,43 @@ const ManageResources = () => {
     status: 'available',
   });
 
+  const [images, setImages] = useState([]);
+
   useEffect(() => {
     fetchResources();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [query, type, status, resources]);
 
   const fetchResources = async () => {
     const res = await api.get('/resources');
     setResources(res.data);
   };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const applyFilters = () => {
+    let data = [...resources];
+
+    if (query) {
+      data = data.filter(r =>
+        r.name.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    if (type) data = data.filter(r => r.type === type);
+    if (status) data = data.filter(r => r.status === status);
+
+    setFiltered(data);
   };
 
-  const submitResource = async () => {
-    if (!form.name || !form.type) {
-      alert('Name and type required');
-      return;
-    }
-
-    if (editing) {
-      await api.put(`/resources/${editing}`, form);
-    } else {
-      await api.post('/resources', form);
-    }
-
-    setForm({ name: '', type: '', capacity: '', status: 'available' });
-    setEditing(null);
+  const deleteResource = async (id) => {
+    if (!window.confirm('Delete resource?')) return;
+    await api.delete(`/resources/${id}`);
     fetchResources();
   };
 
-  const editResource = (r) => {
+  const openEdit = (r) => {
     setEditing(r._id);
     setForm({
       name: r.name,
@@ -49,78 +65,125 @@ const ManageResources = () => {
       capacity: r.capacity,
       status: r.status,
     });
+    setImages([]);
+    setShowForm(true);
   };
 
-  const deleteResource = async (id) => {
-    if (!window.confirm('Delete this resource?')) return;
-    await api.delete(`/resources/${id}`);
+  const submitForm = async () => {
+    const fd = new FormData();
+    Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+    images.forEach(img => fd.append('images', img));
+
+    editing
+      ? await api.put(`/resources/${editing}`, fd)
+      : await api.post('/resources', fd);
+
+    setShowForm(false);
+    setEditing(null);
+    setForm({ name: '', type: '', capacity: '', status: 'available' });
+    setImages([]);
     fetchResources();
   };
 
   return (
     <div className="page">
-      <h2>Manage Resources</h2>
+      <h2 className="page-title">Manage Resources</h2>
 
-      {/* FORM */}
-      <div style={{ marginBottom: 20 }}>
-        <h3>{editing ? 'Edit Resource' : 'Add Resource'}</h3>
-
+      {/* 🔥 ADMIN TOOLBAR */}
+      <div className="admin-toolbar">
         <input
-          name="name"
-          placeholder="Resource Name"
-          value={form.name}
-          onChange={handleChange}
+          placeholder="Search resource"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
 
-        <select name="type" value={form.type} onChange={handleChange}>
-          <option value="">Select Type</option>
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="">All Types</option>
           <option value="room">Room</option>
           <option value="lab">Lab</option>
           <option value="sports">Sports</option>
         </select>
 
-        <input
-          name="capacity"
-          type="number"
-          placeholder="Capacity"
-          value={form.capacity}
-          onChange={handleChange}
-        />
-
-        <select name="status" value={form.status} onChange={handleChange}>
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="">All Status</option>
           <option value="available">Available</option>
           <option value="unavailable">Unavailable</option>
         </select>
 
-        <button onClick={submitResource}>
-          {editing ? 'Update' : 'Add'}
+        <button onClick={() => setShowForm(true)}>
+          + Add Resource
         </button>
-
-        {editing && (
-          <button onClick={() => setEditing(null)} style={{ marginLeft: 8 }}>
-            Cancel
-          </button>
-        )}
       </div>
 
-      {/* LIST */}
-      {resources.map((r) => (
-        <div
-          key={r._id}
-          style={{ border: '1px solid #ccc', padding: 10, marginBottom: 10 }}
-        >
-          <strong>{r.name}</strong> ({r.type})  
-          | Capacity: {r.capacity}  
-          | Status: {r.status}
+      {/* 🔥 GRID */}
+      <div className="admin-grid">
+        {filtered.map(r => (
+          <ResourceCard
+            key={r._id}
+            resource={r}
+            mode="admin"
+            onEdit={openEdit}
+            onDelete={deleteResource}
+          />
+        ))}
+      </div>
 
-          <div style={{ marginTop: 6 }}>
-            <button onClick={() => editResource(r)} style={{ marginRight: 6 }}>
-              Edit
+      {/* 🔥 ADD / EDIT MODAL */}
+      {showForm && (
+        <div className="admin-card">
+          <h3>{editing ? 'Edit Resource' : 'Add Resource'}</h3>
+
+          <div className="form-grid">
+            <input
+              placeholder="Name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+
+            <select
+              value={form.type}
+              onChange={(e) => setForm({ ...form, type: e.target.value })}
+            >
+              <option value="">Type</option>
+              <option value="room">Room</option>
+              <option value="lab">Lab</option>
+              <option value="sports">Sports</option>
+            </select>
+
+            <input
+              type="number"
+              placeholder="Capacity"
+              value={form.capacity}
+              onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+            />
+
+            <select
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
+            >
+              <option value="available">Available</option>
+              <option value="unavailable">Unavailable</option>
+            </select>
+
+            {/* 🔥 IMAGE UPLOAD */}
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => setImages([...e.target.files])}
+            />
+          </div>
+
+          <div className="form-actions">
+            <button onClick={submitForm}>
+              {editing ? 'Update' : 'Create'}
             </button>
-            <button onClick={() => deleteResource(r._id)}>Delete</button>
+            <button className="secondary" onClick={() => setShowForm(false)}>
+              Cancel
+            </button>
           </div>
         </div>
-      ))}
+      )}
     </div>
   );
 };

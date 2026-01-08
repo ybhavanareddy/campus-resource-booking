@@ -1,11 +1,39 @@
-.page {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
+/* ===============================
+   App Layout (Navbar + Sidebar + Content)
+   =============================== */
+
+.app-layout {
+  display: flex;
+  margin-top: 60px; /* height of top navbar */
+  min-height: calc(100vh - 60px);
+  background-color: #f8fafc;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+/* ===============================
+   Main Content Area
+   =============================== */
+
+.app-content {
+  margin-left: 220px; /* default sidebar width */
+  padding: 24px 32px;
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  overflow-x: hidden;
+  transition: margin-left 0.3s ease;
+}
+
+/* When sidebar is collapsed (desktop) */
+.app-layout.collapsed .app-content {
+  margin-left: 70px;
+}
+
+/* ===============================
+   Mobile Layout
+   =============================== */
+
+@media (max-width: 768px) {
+  .app-content {
+    margin-left: 0;
+    padding: 16px;
+  }
 }

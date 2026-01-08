@@ -1,0 +1,86 @@
+/* PAGE */
+.resources-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+.resources-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.resources-header h2 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.resources-header p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* TOOLBAR */
+.resources-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  justify-content: center;
+}
+
+.resources-toolbar input,
+.resources-toolbar select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  min-width: 180px;
+  background: white;
+}
+
+.resources-toolbar input:focus,
+.resources-toolbar select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* GRID */
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* LOADING */
+.resources-loading {
+  text-align: center;
+  font-size: 15px;
+  color: #6b7280;
+  padding: 40px 0;
+}
+
+/* EMPTY STATE */
+.resources-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.resources-empty h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.resources-empty p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .resources-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

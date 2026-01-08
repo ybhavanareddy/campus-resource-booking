@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import BookingModal from '../components/BookingModal';
+import '../styles/my-bookings.css';
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString('en-IN', {
@@ -16,111 +18,96 @@ const formatTime = (date) =>
   });
 
 const MyBookings = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [bookings, setBookings] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [startDate, setStartDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   useEffect(() => {
+    if (!user) return;
     fetchBookings();
-  }, []);
+  }, [user]);
 
   const fetchBookings = async () => {
     const res = await api.get(`/bookings/user/${user.id}`);
-    setBookings(res.data);
+    setBookings(res.data || []);
   };
 
-  // CANCEL BOOKING
   const cancelBooking = async (id) => {
-    const confirm = window.confirm('Are you sure you want to cancel this booking?');
-    if (!confirm) return;
-
+    if (!window.confirm('Cancel this booking?')) return;
     await api.put(`/bookings/${id}/cancel`);
     fetchBookings();
   };
 
-  // EDIT BOOKING
-  const openEdit = (booking) => {
-    setEditing(booking._id);
-
-    const s = new Date(booking.startTime);
-    const e = new Date(booking.endTime);
-
-    setStartDate(s.toISOString().slice(0, 10));
-    setStartTime(s.toISOString().slice(11, 16));
-    setEndDate(e.toISOString().slice(0, 10));
-    setEndTime(e.toISOString().slice(11, 16));
-  };
-
-  const updateBooking = async () => {
-    if (!startDate || !startTime || !endDate || !endTime) {
-      alert('Select date and time');
-      return;
-    }
-
-    const startDateTime = `${startDate}T${startTime}`;
-    const endDateTime = `${endDate}T${endTime}`;
-
-    await api.put(`/bookings/${editing}/update`, {
-      startTime: startDateTime,
-      endTime: endDateTime,
-    });
-
-    setEditing(null);
-    fetchBookings();
-  };
+  if (loading) return <p className="page">Loading bookings…</p>;
+  if (!user) return null;
 
   return (
     <div className="page">
-      <h2>My Bookings</h2>
+      <h2 className="page-title">My Bookings</h2>
 
-      {bookings.length === 0 && <p>No bookings yet</p>}
+      <div className="timeline">
+        {bookings.map((b, index) => (
+          <div key={b._id} className="timeline-item">
+            {/* LINE */}
+            {index !== bookings.length - 1 && (
+              <div className="timeline-line" />
+            )}
 
-      {bookings.map((b) => (
-        <div key={b._id} style={{ border: '1px solid #ccc', padding: 12, marginBottom: 12 }}>
-          <h3>{b.resource.name}</h3>
+            {/* DOT */}
+            <div className="timeline-dot" />
 
-          <p>📅 {formatDate(b.startTime)}</p>
-          <p>
-            ⏰ {formatTime(b.startTime)} – {formatTime(b.endTime)}
-          </p>
+            {/* CARD */}
+            <div className="booking-card">
+              {/* IMAGE */}
+              {b.resource?.images?.[0] && (
+                <img
+                  src={b.resource.images[0]}
+                  alt={b.resource.name}
+                  className="booking-image"
+                />
+              )}
 
-          <p>Status: <strong>{b.status}</strong></p>
+              <div className="booking-info">
+                <h3>{b.resource?.name}</h3>
 
-          {b.status === 'confirmed' && (
-            <>
-              <button onClick={() => openEdit(b)} style={{ marginRight: 8 }}>
-                Edit
-              </button>
-              <button onClick={() => cancelBooking(b._id)}>
-                Cancel
-              </button>
-            </>
-          )}
+                <p className="meta">
+                  📅 {formatDate(b.startTime)}
+                </p>
 
-          {/* EDIT MODE */}
-          {editing === b._id && (
-            <div style={{ marginTop: 10 }}>
-              <h4>Edit Booking</h4>
+                <p className="meta">
+                  ⏰ {formatTime(b.startTime)} –{' '}
+                  {formatTime(b.endTime)}
+                </p>
 
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                <span className={`status ${b.status}`}>
+                  {b.status}
+                </span>
 
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-
-              <br />
-              <button onClick={updateBooking}>Save</button>
-              <button onClick={() => setEditing(null)} style={{ marginLeft: 6 }}>
-                Cancel Edit
-              </button>
+                {b.status === 'confirmed' && (
+                  <div className="actions">
+                    <button onClick={() => setSelectedBooking(b)}>
+                      Edit
+                    </button>
+                    <button
+                      className="danger"
+                      onClick={() => cancelBooking(b._id)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
+
+      {selectedBooking && (
+        <BookingModal
+          booking={selectedBooking}
+          onClose={() => setSelectedBooking(null)}
+        />
+      )}
     </div>
   );
 };

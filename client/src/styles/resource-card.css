@@ -1,0 +1,83 @@
+.resource-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* CAROUSEL */
+.resource-carousel {
+  height: 180px;
+}
+
+.resource-card.admin .resource-carousel {
+  height: 140px;
+}
+
+.slide,
+.resource-carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* slick fixes */
+.slick-slider,
+.slick-list,
+.slick-track,
+.slick-slide > div {
+  height: 100%;
+}
+
+.slick-prev,
+.slick-next {
+  z-index: 10;
+}
+
+.slick-dots {
+  bottom: 8px;
+}
+
+/* CONTENT */
+.resource-content {
+  padding: 14px;
+}
+
+.resource-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resource-meta {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.status.available {
+  color: #16a34a;
+}
+
+.status.unavailable,
+.status.booked {
+  color: #dc2626;
+}
+
+/* ACTIONS */
+.book-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.card-actions .danger {
+  background: #ef4444;
+  color: #fff;
+}

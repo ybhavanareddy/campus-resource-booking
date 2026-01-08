@@ -10,8 +10,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend
+  Legend,
 } from 'recharts';
+import '../styles/admin-analytics.css';
 
 const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#f59e0b', '#7c3aed'];
 
@@ -36,41 +37,55 @@ const AdminAnalytics = () => {
   };
 
   return (
-    <div className="page">
-      <h2>Admin Analytics</h2>
+    <div className="page admin-analytics">
+      {/* Header */}
+      <div className="analytics-header">
+        <h2>Admin Analytics</h2>
+        <p>Overview of campus resource usage and demand</p>
+      </div>
 
-      {/* Usage Bar Chart */}
-      <h3>Resource Usage</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={usageData}>
-          <XAxis dataKey="resourceName" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="totalBookings" fill="#2563eb" />
-        </BarChart>
-      </ResponsiveContainer>
+      {/* Charts Grid */}
+      <div className="analytics-grid">
+        {/* Usage Chart */}
+        <div className="analytics-card">
+          <h3>Resource Usage</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={usageData}>
+              <XAxis dataKey="resourceName" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="totalBookings" fill="#2563eb" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* Top Rooms Pie Chart */}
-      <h3 style={{ marginTop: 40 }}>Top Booked Resources</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={topRooms}
-            dataKey="totalBookings"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            label
-          >
-            {topRooms.map((_, index) => (
-              <Cell key={index} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
+        {/* Top Resources Chart */}
+        <div className="analytics-card">
+          <h3>Top Booked Resources</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={topRooms}
+                dataKey="totalBookings"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {topRooms.map((_, index) => (
+                  <Cell
+                    key={index}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 };

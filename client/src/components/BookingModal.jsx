@@ -1,111 +1,126 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import api from '../services/api';
+import '../styles/modal.css';
 
-const BookingModal = ({ resource, onClose }) => {
+const BookingModal = ({ resource, booking, onClose }) => {
+  // If booking exists → edit mode
+  const isEditMode = Boolean(booking);
+
+  const activeResource = booking
+    ? booking.resource
+    : resource;
+
   const [startDate, setStartDate] = useState('');
-const [startTime, setStartTime] = useState('');
-const [endDate, setEndDate] = useState('');
-const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const handleBooking = async () => {
-  setError('');
-  setMessage('');
+  // Pre-fill values when editing
+  useEffect(() => {
+    if (booking) {
+      const s = new Date(booking.startTime);
+      const e = new Date(booking.endTime);
 
-  if (!startDate || !startTime || !endDate || !endTime) {
-    setError('Please select start and end date & time');
-    return;
-  }
+      setStartDate(s.toISOString().slice(0, 10));
+      setStartTime(s.toISOString().slice(11, 16));
+      setEndDate(e.toISOString().slice(0, 10));
+      setEndTime(e.toISOString().slice(11, 16));
+    }
+  }, [booking]);
 
-  const startDateTime = `${startDate}T${startTime}`;
-  const endDateTime = `${endDate}T${endTime}`;
+  const handleSubmit = async () => {
+    setError('');
+    setMessage('');
 
-  try {
-    await api.post('/bookings/book', {
-      resourceId: resource._id,
-      startTime: startDateTime,
-      endTime: endDateTime,
-      purpose: 'General booking',
-    });
+    if (!startDate || !startTime || !endDate || !endTime) {
+      setError('Please select start and end date & time');
+      return;
+    }
 
-    setMessage('✅ Booking confirmed!');
-  } catch (err) {
-    setError(err.response?.data?.message || 'Booking failed');
-  }
-};
+    try {
+      if (isEditMode) {
+        // UPDATE booking
+        await api.put(`/bookings/${booking._id}/update`, {
+          startTime: `${startDate}T${startTime}`,
+          endTime: `${endDate}T${endTime}`,
+        });
 
+        setMessage('✅ Booking updated successfully!');
+      } else {
+        // CREATE booking
+        await api.post('/bookings/book', {
+          resourceId: activeResource._id,
+          startTime: `${startDate}T${startTime}`,
+          endTime: `${endDate}T${endTime}`,
+          purpose: 'General booking',
+        });
 
+        setMessage('✅ Booking confirmed!');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Action failed');
+    }
+  };
 
-  return (
-    <div className='modal-overlay'>
-      <div className='modal'>
-        <h3>Book {resource.name}</h3>
+  return ReactDOM.createPortal(
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3>
+          {isEditMode
+            ? `Edit Booking – ${activeResource.name}`
+            : `Book ${activeResource.name}`}
+        </h3>
 
-        {message && <p style={{ color: 'green' }}>{message}</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {message && <p className="success">{message}</p>}
+        {error && <p className="error">{error}</p>}
 
-        <label>Start Date</label><br />
-<input
-  type="date"
-  value={startDate}
-  onChange={(e) => setStartDate(e.target.value)}
-/><br /><br />
+        <label>Start Date</label>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
 
-<label>Start Time</label><br />
-<input
-  type="time"
-  value={startTime}
-  onChange={(e) => setStartTime(e.target.value)}
-/><br /><br />
+        <label>Start Time</label>
+        <input
+          type="time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
 
-<label>End Date</label><br />
-<input
-  type="date"
-  value={endDate}
-  onChange={(e) => setEndDate(e.target.value)}
-/><br /><br />
+        <label>End Date</label>
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
 
-<label>End Time</label><br />
-<input
-  type="time"
-  value={endTime}
-  onChange={(e) => setEndTime(e.target.value)}
-/><br /><br />
+        <label>End Time</label>
+        <input
+          type="time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+        />
 
-        <button
-  onClick={handleBooking}
-  disabled={!startTime || !endTime}
->
-  Confirm Booking
-</button>
-
-        <button onClick={onClose} style={{ marginLeft: 10 }}>
-          Close
-        </button>
+        <div className="modal-actions">
+          <button onClick={handleSubmit}>
+            {isEditMode ? 'Update Booking' : 'Confirm Booking'}
+          </button>
+          <button className="secondary" onClick={onClose}>
+            Close
+          </button>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
-};
-
-const overlayStyle = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  background: 'rgba(0,0,0,0.5)',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const modalStyle = {
-  background: '#fff',
-  padding: 20,
-  borderRadius: 8,
-  width: 320,
 };
 
 export default BookingModal;
