@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import BookingModal from '../components/BookingModal';
+import BookingHistoryModal from '../components/BookingHistoryModal';
 import '../styles/my-bookings.css';
 
 const formatDate = (date) =>
@@ -17,10 +18,24 @@ const formatTime = (date) =>
     minute: '2-digit',
   });
 
+const statusLabel = {
+  PENDING: 'Pending Approval',
+  APPROVED: 'Approved',
+  WAITLISTED: 'Waitlisted',
+  REJECTED: 'Rejected',
+  CANCELLED: 'Cancelled',
+  COMPLETED: 'Completed',
+};
+
 const MyBookings = () => {
   const { user, loading } = useAuth();
   const [bookings, setBookings] = useState([]);
+
+  // 🔹 existing edit modal
   const [selectedBooking, setSelectedBooking] = useState(null);
+
+  // 🔹 NEW: history modal
+  const [historyBooking, setHistoryBooking] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -48,53 +63,61 @@ const MyBookings = () => {
       <div className="timeline">
         {bookings.map((b, index) => (
           <div key={b._id} className="timeline-item">
-            {/* LINE */}
             {index !== bookings.length - 1 && (
               <div className="timeline-line" />
             )}
-
-            {/* DOT */}
             <div className="timeline-dot" />
 
-            {/* CARD */}
             <div className="booking-card">
-              {/* IMAGE */}
-              {b.resource?.images?.[0] && (
-                <img
-                  src={b.resource.images[0]}
-                  alt={b.resource.name}
-                  className="booking-image"
-                />
-              )}
-
               <div className="booking-info">
                 <h3>{b.resource?.name}</h3>
 
-                <p className="meta">
-                  📅 {formatDate(b.startTime)}
-                </p>
-
+                <p className="meta">📅 {formatDate(b.startTime)}</p>
                 <p className="meta">
                   ⏰ {formatTime(b.startTime)} –{' '}
                   {formatTime(b.endTime)}
                 </p>
 
+                {b.resource?.bookingType === 'HOSTEL' && (
+                  <p className="meta">
+                    🛏 Occupied till{' '}
+                    <strong>{formatDate(b.endTime)}</strong>
+                  </p>
+                )}
+
                 <span className={`status ${b.status}`}>
-                  {b.status}
+                  {statusLabel[b.status]}
                 </span>
 
-                {b.status === 'confirmed' && (
-                  <div className="actions">
-                    <button onClick={() => setSelectedBooking(b)}>
-                      Edit
-                    </button>
-                    <button
-                      className="danger"
-                      onClick={() => cancelBooking(b._id)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                {/* 🔹 ACTIONS */}
+                <div className="actions">
+                  {b.status === 'PENDING' && (
+                    <>
+                      <button onClick={() => setSelectedBooking(b)}>
+                        Edit
+                      </button>
+                      <button
+                        className="danger"
+                        onClick={() => cancelBooking(b._id)}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  )}
+
+                  {/* 🔹 NEW: View History (always allowed) */}
+                  <button
+                    className="secondary"
+                    onClick={() => setHistoryBooking(b)}
+                  >
+                    View History
+                  </button>
+                </div>
+
+                {b.status === 'WAITLISTED' && (
+                  <p className="hint">
+                    You’ll be notified if a spot opens.
+                  </p>
                 )}
               </div>
             </div>
@@ -102,10 +125,22 @@ const MyBookings = () => {
         ))}
       </div>
 
+      {/* 🔹 EXISTING EDIT MODAL */}
       {selectedBooking && (
         <BookingModal
           booking={selectedBooking}
-          onClose={() => setSelectedBooking(null)}
+          onClose={() => {
+            setSelectedBooking(null);
+            fetchBookings();
+          }}
+        />
+      )}
+
+      {/* 🔹 NEW HISTORY MODAL */}
+      {historyBooking && (
+        <BookingHistoryModal
+          booking={historyBooking}
+          onClose={() => setHistoryBooking(null)}
         />
       )}
     </div>

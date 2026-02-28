@@ -12,33 +12,38 @@ const ResourceCard = ({ resource, mode = 'user', onEdit, onDelete }) => {
   if (!resource) return null;
 
   const images = Array.isArray(resource.images) ? resource.images : [];
+  const isHostel = resource.bookingType === 'HOSTEL';
 
   const sliderSettings = {
-    dots: images.length > 1,
-    arrows: images.length > 1,
-    infinite: images.length > 1,
-    speed: 400,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    adaptiveHeight: true,
+    dots: false,          // ❌ hide dots
+  arrows: images.length > 1,
+  infinite: images.length > 1,
+  speed: 400,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  adaptiveHeight: true,
   };
 
   return (
     <div className={`resource-card ${mode}`}>
-      {/* IMAGE CAROUSEL */}
       {images.length > 0 && (
         <div className="resource-carousel">
-          <Slider {...sliderSettings} key={resource._id}>
+          {images.length > 1 && (
+          <div className="image-count-badge">
+          {images.length} photos
+          </div>
+        )}
+
+          <Slider {...sliderSettings}>
             {images.map((img, i) => (
               <div key={i} className="slide">
-                <img src={img} alt={resource.name} />
+                <img src={img} alt={`${resource.name}-${i}`} />
               </div>
             ))}
           </Slider>
         </div>
       )}
 
-      {/* CONTENT */}
       <div className="resource-content">
         <div className="resource-header">
           <h3>{resource.name}</h3>
@@ -48,7 +53,8 @@ const ResourceCard = ({ resource, mode = 'user', onEdit, onDelete }) => {
         </div>
 
         <p className="resource-meta">
-          Capacity: <strong>{resource.capacity}</strong>
+          {isHostel ? 'Beds' : 'Capacity'}:{' '}
+          <strong>{resource.capacity}</strong>
         </p>
 
         <span className={`status ${resource.status}`}>

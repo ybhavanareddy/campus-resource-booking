@@ -1,8 +1,14 @@
-// server/src/models/Resource.js
 const mongoose = require('mongoose');
 
 const ResourceSchema = new mongoose.Schema(
   {
+    bookingType: {
+  type: String,
+  enum: ['SLOT', 'HOSTEL'],
+  default: 'SLOT',
+},
+
+
     name: {
       type: String,
       required: true,
@@ -23,6 +29,7 @@ const ResourceSchema = new mongoose.Schema(
 
     images: [{ type: String }],
 
+    // Admin-level control (not booking-based)
     status: {
       type: String,
       enum: ['available', 'unavailable'],

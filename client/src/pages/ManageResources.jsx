@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import api from '../services/api';
 import ResourceCard from '../components/ResourceCard';
 import '../styles/manage-resources.css';
+import '../styles/modal.css';
 
 const ManageResources = () => {
   const [resources, setResources] = useState([]);
@@ -69,6 +71,21 @@ const ManageResources = () => {
     setShowForm(true);
   };
 
+  /* ✅ FIX: MULTI IMAGE APPEND */
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    setImages(prev => {
+      const existingNames = prev.map(f => f.name);
+      const unique = files.filter(
+        f => !existingNames.includes(f.name)
+      );
+      return [...prev, ...unique];
+    });
+
+    e.target.value = null; // IMPORTANT
+  };
+
   const submitForm = async () => {
     const fd = new FormData();
     Object.entries(form).forEach(([k, v]) => fd.append(k, v));
@@ -89,7 +106,6 @@ const ManageResources = () => {
     <div className="page">
       <h2 className="page-title">Manage Resources</h2>
 
-      {/* 🔥 ADMIN TOOLBAR */}
       <div className="admin-toolbar">
         <input
           placeholder="Search resource"
@@ -115,7 +131,6 @@ const ManageResources = () => {
         </button>
       </div>
 
-      {/* 🔥 GRID */}
       <div className="admin-grid">
         {filtered.map(r => (
           <ResourceCard
@@ -128,62 +143,85 @@ const ManageResources = () => {
         ))}
       </div>
 
-      {/* 🔥 ADD / EDIT MODAL */}
-      {showForm && (
-        <div className="admin-card">
-          <h3>{editing ? 'Edit Resource' : 'Add Resource'}</h3>
-
-          <div className="form-grid">
-            <input
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-
-            <select
-              value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
+      {/* ✅ REAL MODAL */}
+      {showForm &&
+        ReactDOM.createPortal(
+          <div className="modal-overlay" onClick={() => setShowForm(false)}>
+            <div
+              className="modal admin-modal"
+              onClick={(e) => e.stopPropagation()}
             >
-              <option value="">Type</option>
-              <option value="room">Room</option>
-              <option value="lab">Lab</option>
-              <option value="sports">Sports</option>
-            </select>
+              <h3>{editing ? 'Edit Resource' : 'Add Resource'}</h3>
 
-            <input
-              type="number"
-              placeholder="Capacity"
-              value={form.capacity}
-              onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-            />
+              <div className="form-grid">
+                <input
+                  placeholder="Name"
+                  value={form.name}
+                  onChange={(e) =>
+                    setForm({ ...form, name: e.target.value })
+                  }
+                />
 
-            <select
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-            >
-              <option value="available">Available</option>
-              <option value="unavailable">Unavailable</option>
-            </select>
+                <select
+                  value={form.type}
+                  onChange={(e) =>
+                    setForm({ ...form, type: e.target.value })
+                  }
+                >
+                  <option value="">Type</option>
+                  <option value="room">Room</option>
+                  <option value="lab">Lab</option>
+                  <option value="sports">Sports</option>
+                </select>
 
-            {/* 🔥 IMAGE UPLOAD */}
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => setImages([...e.target.files])}
-            />
-          </div>
+                <input
+                  type="number"
+                  placeholder="Capacity"
+                  value={form.capacity}
+                  onChange={(e) =>
+                    setForm({ ...form, capacity: e.target.value })
+                  }
+                />
 
-          <div className="form-actions">
-            <button onClick={submitForm}>
-              {editing ? 'Update' : 'Create'}
-            </button>
-            <button className="secondary" onClick={() => setShowForm(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+                <select
+                  value={form.status}
+                  onChange={(e) =>
+                    setForm({ ...form, status: e.target.value })
+                  }
+                >
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                </select>
+
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+              </div>
+
+              {images.length > 0 && (
+                <p style={{ fontSize: 12 }}>
+                  Selected images: <strong>{images.length}</strong>
+                </p>
+              )}
+
+              <div className="form-actions">
+                <button onClick={submitForm}>
+                  {editing ? 'Update' : 'Create'}
+                </button>
+                <button
+                  className="secondary"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

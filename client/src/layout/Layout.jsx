@@ -5,11 +5,11 @@ import Sidebar from '../components/Sidebar';
 import '../styles/layout.css';
 
 const Layout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // ✅ default open on desktop
 
   return (
     <>
-      <Navbar toggleSidebar={() => setSidebarOpen(true)} />
+      <Navbar toggleSidebar={() => setSidebarOpen(prev => !prev)} />
 
       <div className="app-layout">
         <Sidebar

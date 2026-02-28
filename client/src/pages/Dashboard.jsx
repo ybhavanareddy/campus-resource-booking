@@ -66,11 +66,20 @@ const Dashboard = () => {
               Add, update, or remove campus resources.
             </p>
             <Link to="/admin/resources">
-  <button>Manage Resources</button>
-</Link>
+              <button>Manage Resources</button>
+            </Link>
 
           </div>
+                    <div className="action-card">
+            <h3>Booking Approvals</h3>
+            <p>Approve or reject pending booking requests.</p>
+            <Link to="/admin/bookings">
+              <button>Manage Bookings</button>
+            </Link>
+          </div>
+
         </div>
+        
       )}
     </div>
   );

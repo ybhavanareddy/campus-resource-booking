@@ -1,61 +1,135 @@
-# Campus Resource Booking System (MERN)
 
-A full-stack MERN application that allows students and faculty to book campus resources such as labs, rooms, and halls, with admin-level analytics and management.
+# 🎓 Campus Resource Booking System (MERN)
+
+A full-stack MERN application that allows students and faculty to book campus resources such as labs, rooms, and halls.  
+Includes admin-level approval workflows, analytics, and cloud-based image management.
+
+---
 
 ## 🚀 Features
 
-### Authentication
-- User signup & login using JWT
-- Persistent login across refresh
-- Role-based access (User / Admin)
+### 🔐 Authentication & Role Management
 
-### Resource Management (Admin)
-- Create and delete campus resources
+- JWT-based login & signup
+- Persistent login using localStorage
+- Role selection during registration (User / Admin) for demo purposes
+- Role-based route protection using backend middleware
+- Admin-only routes secured using `protect` and `adminOnly` middleware
+
+> Note: In a production environment, admin roles would be assigned securely and not publicly selectable during registration.
+
+---
+
+### 🏢 Resource Management (Admin)
+- Create resources with image upload (Cloudinary)
+- Delete resources
 - View all resources
+- Manage resource availability status
 
-### Booking System (User)
-- Book available resources with date & time
-- View own bookings
-- Cancel or update bookings
+---
 
-### Analytics (Admin)
-- Usage analytics per resource
-- Top booked resources using MongoDB aggregation
+### 📅 Booking System (User)
+- Book resources with date & time
+- Multi-stage booking lifecycle:
+  - ⏳ Pending (awaiting admin approval)
+  - ✅ Approved
+  - ❌ Rejected
+  - ✔ Completed
+  - ✔ Confirmed
+- View booking history (timeline UI)
+- Cancel booking request
+
+---
+
+### 🛡 Booking Approval Workflow (Admin)
+- Approve or reject booking requests
+- Update booking status
+- Monitor booking lifecycle
+
+---
+
+### 📊 Analytics Dashboard (Admin)
+- Resource usage insights
+- Top booked resources
+- MongoDB aggregation-based analytics
+
+---
+
+### 🖼 Image Management
+- Integrated Cloudinary for secure image uploads
+- Images stored as cloud URLs in database
+- Optimized image delivery
+
+---
 
 ## 🛠 Tech Stack
 
-- Frontend: React (Vite)
-- Backend: Node.js, Express.js
-- Database: MongoDB Atlas
-- Authentication: JWT
-- Deployment: Vercel (Frontend), Render (Backend)
+**Frontend**
+- React (Vite)
+- React Router
+- Context API
+- React Slick (Carousel)
+
+**Backend**
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- JWT Authentication
+
+**Cloud Services**
+- Cloudinary (Image Storage)
+
+**Deployment**
+- Frontend: Vercel
+- Backend: Render
+
+---
 
 ## 🌍 Live Demo
 
 - Frontend: 
-- Backend API: 
+- Backend API:
+
+---
 
 ## ⚙️ Local Setup
 
-### Backend
+### 1️⃣ Backend
+
 ```bash
 cd server
 npm install
 npm run dev
-```
-Create .env inside server/:
 
+
+Create .env inside server/:
 PORT=5000
 MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret 
+JWT_SECRET=your_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-Frontend
-cd client
-npm install
-npm run dev
 
-🔐 Admin Access
 
-Admin users are created by manually updating the user role in the database (industry-standard practice).
 
-Built as part of a MERN stack learning project.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -87,6 +87,9 @@
   .sidebar.mobile-open {
     transform: translateX(0);
   }
+  .sidebar.collapsed {
+    width: 70px;
+  }
 }
 
 /* ===============================

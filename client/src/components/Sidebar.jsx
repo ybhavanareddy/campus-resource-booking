@@ -4,6 +4,7 @@ import {
   FaCalendarCheck,
   FaChartBar,
   FaCogs,
+  FaTasks,
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import '../styles/sidebar.css';
@@ -16,12 +17,16 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
   return (
     <>
-      {/* Overlay (mobile) */}
+      {/* Overlay (mobile only) */}
       {isOpen && (
         <div className="sidebar-overlay" onClick={closeSidebar} />
       )}
 
-      <aside className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
+      <aside
+        className={`sidebar ${
+          isOpen ? 'mobile-open' : 'collapsed'
+        }`}
+      >
         <nav>
           {user.role === 'user' && (
             <>
@@ -63,6 +68,15 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
               >
                 <FaCogs />
                 <span>Manage Resources</span>
+              </Link>
+
+              <Link
+                to="/admin/bookings"
+                className={location.pathname === '/admin/bookings' ? 'active' : ''}
+                onClick={closeSidebar}
+              >
+                <FaTasks />
+                <span>Booking Approvals</span>
               </Link>
             </>
           )}

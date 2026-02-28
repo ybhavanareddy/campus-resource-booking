@@ -9,6 +9,7 @@ import AdminAnalytics from './pages/AdminAnalytics';
 import AdminRoute from './components/AdminRoute';
 import ManageResources from './pages/ManageResources';
 import Layout from './layout/Layout';
+import AdminBookings from './pages/AdminBookings';
 
 function App() {
   return (
@@ -63,7 +64,17 @@ function App() {
             </AdminRoute>
           }
         />
+        <Route
+          path="/admin/bookings"
+          element={
+            <AdminRoute>
+              <AdminBookings />
+            </AdminRoute>
+          }
+        />
       </Route>
+      
+
     </Routes>
   );
 }
